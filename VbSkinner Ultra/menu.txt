@@ -1,0 +1,9 @@
+file!File
+change!....Change Skin
+open!....open
+save!....save
+Edit!Edit
+Copy!....Copy
+Cut!....Cut
+Help!Help
+Vote!....Vote For ME

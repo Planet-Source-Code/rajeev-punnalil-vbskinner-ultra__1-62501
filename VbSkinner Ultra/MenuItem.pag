@@ -1,0 +1,352 @@
+VERSION 5.00
+Begin VB.PropertyPage MenuItem 
+   Caption         =   "MenuItem"
+   ClientHeight    =   8010
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   6975
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   8010
+   ScaleWidth      =   6975
+   Begin VB.ListBox List3 
+      Height          =   1425
+      Left            =   7200
+      TabIndex        =   17
+      Top             =   1875
+      Width           =   840
+   End
+   Begin VB.CheckBox chkButtonMax 
+      Caption         =   "ButtonMax"
+      Height          =   285
+      Left            =   7650
+      TabIndex        =   16
+      Top             =   450
+      Width           =   2700
+   End
+   Begin VB.Frame Frame1 
+      Caption         =   "Add Menu"
+      Height          =   7965
+      Left            =   75
+      TabIndex        =   0
+      Top             =   0
+      Width           =   6840
+      Begin VB.ListBox List1 
+         Height          =   5325
+         ItemData        =   "MenuItem.pgx":0000
+         Left            =   225
+         List            =   "MenuItem.pgx":0002
+         TabIndex        =   12
+         Top             =   2400
+         Width           =   6405
+      End
+      Begin VB.CommandButton up 
+         Height          =   495
+         Left            =   765
+         Picture         =   "MenuItem.pgx":0004
+         Style           =   1  'Graphical
+         TabIndex        =   11
+         Top             =   1650
+         Width           =   555
+      End
+      Begin VB.CommandButton down 
+         Height          =   495
+         Left            =   225
+         Picture         =   "MenuItem.pgx":0446
+         Style           =   1  'Graphical
+         TabIndex        =   10
+         Top             =   1650
+         Width           =   525
+      End
+      Begin VB.CommandButton prev 
+         Height          =   495
+         Left            =   1725
+         Picture         =   "MenuItem.pgx":0888
+         Style           =   1  'Graphical
+         TabIndex        =   9
+         Top             =   1650
+         Width           =   525
+      End
+      Begin VB.CommandButton next 
+         Height          =   495
+         Left            =   2235
+         Picture         =   "MenuItem.pgx":0CCA
+         Style           =   1  'Graphical
+         TabIndex        =   8
+         Top             =   1650
+         Width           =   525
+      End
+      Begin VB.TextBox txtname 
+         Height          =   405
+         Left            =   1245
+         TabIndex        =   7
+         Top             =   930
+         Width           =   3585
+      End
+      Begin VB.TextBox txtCaption 
+         Height          =   405
+         Left            =   1245
+         TabIndex        =   6
+         Top             =   450
+         Width           =   3585
+      End
+      Begin VB.CommandButton Nxt 
+         Caption         =   "Next"
+         Height          =   345
+         Left            =   2955
+         TabIndex        =   5
+         Top             =   1770
+         Width           =   1065
+      End
+      Begin VB.CommandButton Insert 
+         Caption         =   "Insert"
+         Height          =   345
+         Left            =   4095
+         TabIndex        =   4
+         Top             =   1770
+         Width           =   1215
+      End
+      Begin VB.CommandButton Delete 
+         Caption         =   "Delete"
+         Height          =   345
+         Left            =   5385
+         TabIndex        =   3
+         Top             =   1770
+         Width           =   1215
+      End
+      Begin VB.CommandButton OK 
+         Caption         =   "OK"
+         Height          =   405
+         Left            =   5385
+         TabIndex        =   2
+         Top             =   450
+         Width           =   1275
+      End
+      Begin VB.CommandButton Cancel 
+         Caption         =   "Cancel"
+         Height          =   405
+         Left            =   5355
+         TabIndex        =   1
+         Top             =   990
+         Width           =   1275
+      End
+      Begin VB.Label Label1 
+         Caption         =   "Caption"
+         Height          =   225
+         Left            =   285
+         TabIndex        =   14
+         Top             =   540
+         Width           =   675
+      End
+      Begin VB.Label Label2 
+         Caption         =   "Name"
+         Height          =   255
+         Left            =   315
+         TabIndex        =   13
+         Top             =   1050
+         Width           =   555
+      End
+   End
+   Begin VB.ListBox List2 
+      Height          =   2205
+      Left            =   4725
+      TabIndex        =   15
+      Top             =   1800
+      Visible         =   0   'False
+      Width           =   1590
+   End
+End
+Attribute VB_Name = "MenuItem"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
+Dim menulevel As Integer
+Dim index As Long
+Private Sub chkButtonMax_Click()
+    Changed = True
+End Sub
+
+
+Private Sub PropertyPage_ApplyChanges()
+    SelectedControls(0).ButtonMax = (chkButtonMax.Value = vbChecked)
+End Sub
+
+
+Private Sub PropertyPage_Initialize()
+If Dir(App.Path + "\menu.txt") = "" Then Exit Sub
+List1.Clear
+List2.Clear
+
+Dim Temp As String
+Open App.Path + "\menu.txt" For Input As #2
+While Not EOF(2)
+    Input #2, Temp
+    
+    List2.AddItem Mid(Temp, 1, InStr(Temp, "!") - 1)
+    List1.AddItem Mid(Temp, InStr(Temp, "!") + 1)
+Wend
+Close #2
+End Sub
+
+Private Sub PropertyPage_SelectionChanged()
+    chkButtonMax.Value = (SelectedControls(0).ButtonMax And vbChecked)
+End Sub
+
+
+
+Private Sub Delete_Click()
+On Error Resume Next
+    List1.RemoveItem index
+    List2.RemoveItem index
+End Sub
+
+Private Sub down_Click()
+If Len(List1.List(index)) > 3 Then
+    If Mid(List1.List(index), 1, 4) = "...." Then
+        List1.List(index) = Mid(List1.List(index), 5)
+    End If
+End If
+End Sub
+
+Private Sub Insert_Click()
+List1.AddItem "", index
+List2.AddItem "", index
+List1.Selected(index) = True
+End Sub
+
+Private Sub List1_Click()
+Dim i As Integer
+For i = 0 To List1.ListCount
+    If List1.Selected(i) = True Then
+        index = i
+       ' txtCaption = List1.List(i)
+        'txtname = List2.List(i)
+        Exit Sub
+    End If
+Next i
+End Sub
+
+Private Sub next_Click()
+If Not index = List1.ListCount - 1 Then
+    Dim tmp As String
+    tmp = List1.List(index)
+    List1.List(index) = List1.List(index + 1)
+    List1.List(index + 1) = tmp
+    
+    tmp = List2.List(index)
+    List2.List(index) = List2.List(index + 1)
+    List2.List(index + 1) = tmp
+    
+    index = index + 1
+    List1.Selected(index) = True
+End If
+
+End Sub
+
+Private Sub Nxt_Click()
+    index = index + 1
+
+    txtCaption = ""
+    txtname = ""
+End Sub
+
+Private Sub OK_Click()
+compile
+End Sub
+
+Private Sub prev_Click()
+If Not index = 0 Then
+    Dim tmp As String
+    
+    tmp = List1.List(index)
+    List1.List(index) = List1.List(index - 1)
+    List1.List(index - 1) = tmp
+    
+    tmp = List2.List(index)
+    List2.List(index) = List2.List(index - 1)
+    List2.List(index - 1) = tmp
+    
+    index = index - 1
+    List1.Selected(index) = True
+End If
+End Sub
+
+Private Sub txtCaption_Change()
+On Error Resume Next
+Dim lvl  As Integer
+Dim Temp As String
+lvl = menulevel
+    While lvl > 0
+        Temp = Temp & "...."
+        lvl = lvl - 1
+    Wend
+    Temp = Temp & txtCaption.Text
+    List1.AddItem Temp, index
+    List1.RemoveItem index + 1
+    List3.AddItem Temp, index
+    List3.RemoveItem index + 1
+    
+End Sub
+
+Private Sub txtname_Change()
+
+    List2.AddItem txtname.Text, index
+On Error Resume Next
+    List2.RemoveItem index + 1
+End Sub
+
+Private Sub up_Click()
+If List1.List(index) = "" Then
+    menulevel = menulevel + 1
+    List1.List(index) = "...."
+Else
+    menulevel = menulevel + 1
+    List1.List(index) = "...." & List1.List(index)
+End If
+End Sub
+
+Private Sub compile()
+Dim i As Integer
+Dim Temp As String
+Open App.Path + "\menu.txt" For Output As #1
+    For i = 0 To List1.ListCount - 1
+        Temp = List2.List(i) & "!" & List1.List(i)
+        Print #1, Temp
+    Next i
+Close #1
+End Sub
+
+Private Function GetKeyStatus(Temp As String) As Integer
+tmp1 = "...."
+Dim i As Integer
+While (InStr(Temp, temp1))
+    i = i + 1
+    temp1 = temp1 & "...."
+Wend
+GetKeyStatus = i - 1
+End Function
+
+
+Private Function Trimed(Temp As String) As String
+again:
+    If InStr(Temp, "....") Then
+        Temp = Mid(Temp, 5)
+        GoTo again
+    End If
+    Trimed = Temp
+End Function
+
+
+Private Function GetLevel(ByVal Temp As String) As Integer
+    Dim i As Integer
+again:
+    If InStr(Temp, "....") Then
+        Temp = Mid(Temp, 5)
+        i = i + 1
+        GoTo again
+    End If
+    
+
+End Function
+
+
